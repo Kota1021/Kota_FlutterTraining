@@ -2,13 +2,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_training/models/weather_kind.dart';
 import 'package:flutter_training/models/weather_response.dart';
 import 'package:flutter_training/repositories/weather_response_repository.dart';
-import 'package:flutter_training/screens/weather_info/notifier/weather_response_notifier.dart';
+import 'package:flutter_training/screens/weather_info/notifier/weather_info_screen_state_notifier.dart';
+import 'package:flutter_training/screens/weather_info/weather_info_screen_state.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 import 'package:yumemi_weather/yumemi_weather.dart';
 
-import 'weather_response_notifier_test.mocks.dart';
+import 'weather_info_screen_state_notifier_test.mocks.dart';
 
 @GenerateNiceMocks([MockSpec<YumemiWeather>()])
 void main() {
@@ -43,10 +44,10 @@ provider がリッスンされていない場合、テストの途中でその�
 この戻り値を使用すると、provider の現在の値を読み取ることができますが、
 テストの途中で provider が破棄されないことも保証されます:
      */
-    final weatherResponseNotifierProviderHolder =
-        container.listen(weatherResponseNotifierProvider, (_, __) {});
+    final weatherInfoScreenStateNotifierProviderHolder =
+        container.listen(weatherInfoScreenStateNotifierProvider, (_, __) {});
 
-    final expected = WeatherResponse(
+    final weatherResponse = WeatherResponse(
       weatherCondition: WeatherKind.cloudy,
       maxTemperature: 25,
       minTemperature: 7,
@@ -57,8 +58,11 @@ provider がリッスンされていない場合、テストの途中でその�
         03,
       ),
     );
-    await container.read(weatherResponseNotifierProvider.notifier).fetch();
-    final actualState = weatherResponseNotifierProviderHolder.read();
+    final expected = WeatherInfoScreenState(weatherResponse: weatherResponse);
+    await container
+        .read(weatherInfoScreenStateNotifierProvider.notifier)
+        .fetch();
+    final actualState = weatherInfoScreenStateNotifierProviderHolder.read();
     expect(actualState, expected);
   });
 
@@ -72,7 +76,9 @@ provider がリッスンされていない場合、テストの途中でその�
               .thenThrow(YumemiWeatherError.invalidParameter);
 
           expect(
-            container.read(weatherResponseNotifierProvider.notifier).fetch,
+            container
+                .read(weatherInfoScreenStateNotifierProvider.notifier)
+                .fetch,
             throwsA(YumemiWeatherError.invalidParameter),
           );
         },
@@ -85,7 +91,9 @@ provider がリッスンされていない場合、テストの途中でその�
               .thenThrow(YumemiWeatherError.unknown);
 
           expect(
-            container.read(weatherResponseNotifierProvider.notifier).fetch,
+            container
+                .read(weatherInfoScreenStateNotifierProvider.notifier)
+                .fetch,
             throwsA(YumemiWeatherError.unknown),
           );
         },

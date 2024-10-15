@@ -3,8 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_training/components/weather_condition_panel.dart';
-import 'package:flutter_training/screens/weather_info/notifier/loading_state_notifier.dart';
-import 'package:flutter_training/screens/weather_info/notifier/weather_response_notifier.dart';
+import 'package:flutter_training/screens/weather_info/notifier/weather_info_screen_state_notifier.dart';
 import 'package:yumemi_weather/yumemi_weather.dart';
 
 class WeatherInfoScreen extends ConsumerWidget {
@@ -44,8 +43,8 @@ class WeatherInfoScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final labelLargeStyle = Theme.of(context).textTheme.labelLarge;
-    final weatherProvider = ref.watch(weatherResponseNotifierProvider);
-    final isLoading = ref.watch(loadingStateNotifierProvider);
+    final screenStateProvider =
+        ref.watch(weatherInfoScreenStateNotifierProvider);
 
     return Scaffold(
       body: Stack(
@@ -57,7 +56,7 @@ class WeatherInfoScreen extends ConsumerWidget {
                 children: [
                   const Spacer(),
                   WeatherConditionPanel(
-                    weatherResponse: weatherProvider,
+                    weatherResponse: screenStateProvider.weatherResponse,
                     labelLargeStyle: labelLargeStyle,
                   ),
                   Expanded(
@@ -88,7 +87,7 @@ class WeatherInfoScreen extends ConsumerWidget {
                                   try {
                                     await ref
                                         .read(
-                                          weatherResponseNotifierProvider
+                                          weatherInfoScreenStateNotifierProvider
                                               .notifier,
                                         )
                                         .fetch();
@@ -130,7 +129,7 @@ class WeatherInfoScreen extends ConsumerWidget {
               ),
             ),
           ),
-          if (isLoading)
+          if (screenStateProvider.isLoading)
             const ColoredBox(
               color: Colors.black54,
               child: Center(
