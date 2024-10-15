@@ -15,8 +15,8 @@ class WeatherInfoScreenStateNotifier extends _$WeatherInfoScreenStateNotifier {
     try {
       final weatherResponse =
           await ref.read(weatherResponseRepositoryProvider).fetch();
-      state = state.copyWith(weatherResponse: weatherResponse);
-      state = state.copyWith(isLoading: false);
+      state =
+          state.copyWith(weatherResponse: weatherResponse, isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false);
       rethrow;
